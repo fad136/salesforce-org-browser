@@ -2,6 +2,8 @@
 
 A lightweight Salesforce Org browser for developers switching from VS Code. This tool provides a terminal UI to explore and retrieve Salesforce metadata, with support for all major metadata types.
 
+![Salesforce Org Browser TUI](assets/tui-main-menu.png)
+
 ## Features
 
 - 🔍 **Terminal UI**: Interactive command-line interface for quick exploration
