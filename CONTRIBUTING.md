@@ -86,6 +86,7 @@ To add support for a new metadata type:
    ```
 
 3. Update the TUI menu options (automatically handled by the configuration)
+4. Note: updates are also needed to `src/tui/tu-handler.js`, adding the specific properties handling of the newly added metadata type.
 
 ### Testing
 
