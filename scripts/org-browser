@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Salesforce Org Browser - TUI Runner
+# Run this script from any force-app directory to use the org browser with that project's org
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ORG_BROWSER_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Function to show usage
+show_usage() {
+    echo "Salesforce Org Browser - Terminal UI"
+    echo ""
+    echo "Usage: $0 [command] [options]"
+    echo ""
+    echo "Commands:"
+    echo "  tui                    Run Terminal UI (default)"
+    echo "  help, -h, --help       Show this help"
+    echo ""
+    echo "Options:"
+    echo "  --fast                 Skip SFDX org check for faster startup"
+    echo ""
+    echo "Examples:"
+    echo "  $0                     # Start interactive TUI"
+    echo "  $0 tui                 # Start interactive TUI"
+    echo "  $0 tui --fast          # Start TUI with fast mode (skip org check)"
+    echo ""
+    echo "Note: Run this script from a force-app directory or SFDX project"
+    echo "      to use the org configured for that project."
+}
+
+# Check if we're in a valid SFDX project
+check_project() {
+    if [ ! -f "sfdx-project.json" ] && [ ! -d "force-app" ]; then
+        echo "⚠️  Warning: Not in a valid SFDX project directory"
+        echo "   This script works best when run from a force-app directory"
+        echo "   or SFDX project root."
+        echo ""
+    fi
+}
+
+# Main logic
+main() {
+    local command=${1:-tui}
+    local fast_mode=false
+    
+    # Parse arguments
+    shift  # Remove the command from arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --fast)
+                fast_mode=true
+                shift
+                ;;
+            *)
+                echo "❌ Unknown option: $1"
+                show_usage
+                exit 1
+                ;;
+        esac
+    done
+    
+    # Show help
+    if [ "$command" = "help" ] || [ "$command" = "-h" ] || [ "$command" = "--help" ]; then
+        show_usage
+        exit 0
+    fi
+    
+    # Check project context
+    check_project
+    
+    # Store the original working directory (where SFDX context is)
+    ORIGINAL_DIR=$(pwd)
+    
+    case $command in
+        "tui")
+            echo "🚀 Starting Terminal UI..."
+            if [ "$fast_mode" = true ]; then
+                echo "⚡ Fast mode enabled - skipping SFDX org check"
+                cd "$ORIGINAL_DIR" && FAST_MODE=true node "$ORG_BROWSER_DIR/src/tui.js"
+            else
+                cd "$ORIGINAL_DIR" && node "$ORG_BROWSER_DIR/src/tui.js"
+            fi
+            ;;
+        *)
+            echo "❌ Unknown command: $command"
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+# Run main function
+main "$@"
