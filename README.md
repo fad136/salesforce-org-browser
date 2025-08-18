@@ -23,7 +23,7 @@ A lightweight Salesforce Org browser for developers switching from VS Code. This
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/fad136/salesforce-org-browser.git
 cd org-browser
 
 # Install dependencies
