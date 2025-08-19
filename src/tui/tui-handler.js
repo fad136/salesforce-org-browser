@@ -90,7 +90,10 @@ export class TuiHandler {
 
       spinner.succeed(`Found ${items.length} ${metadataType.displayName.toLowerCase()}`);
 
-      const choices = items.map(item => ({
+      // Sort items alphabetically by fullName
+      const sortedItems = items.sort((a, b) => a.fullName.localeCompare(b.fullName));
+
+      const choices = sortedItems.map(item => ({
         name: item.fullName,
         value: item.fullName
       }));
@@ -103,6 +106,7 @@ export class TuiHandler {
           choices: [
             ...choices,
             new inquirer.Separator(),
+            { name: '🔍 Search in this list', value: 'search' },
             { name: '🔙 Back to main menu', value: 'back' }
           ]
         }
@@ -110,6 +114,9 @@ export class TuiHandler {
 
       if (selectedItem === 'back') {
         await this.showMainMenu();
+        return;
+      } else if (selectedItem === 'search') {
+        await this.searchInMetadataType(metadataType, sortedItems);
         return;
       }
 
@@ -366,15 +373,38 @@ export class TuiHandler {
         item.fullName.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      spinner.succeed(`Found ${filteredResults.length} results`);
+      // Sort results alphabetically
+      const sortedResults = filteredResults.sort((a, b) => a.fullName.localeCompare(b.fullName));
 
-      if (filteredResults.length === 0) {
+      spinner.succeed(`Found ${sortedResults.length} results`);
+
+      if (sortedResults.length === 0) {
         console.log(chalk.yellow('No results found.'));
-        await this.showMainMenu();
+        console.log(chalk.gray('Try:'));
+        console.log(chalk.gray('• Using a different search term'));
+        console.log(chalk.gray('• Checking spelling'));
+        
+        const { action } = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'action',
+            message: 'What would you like to do?',
+            choices: [
+              { name: '🔍 Search again', value: 'search' },
+              { name: '🔙 Back to main menu', value: 'back' }
+            ]
+          }
+        ]);
+
+        if (action === 'search') {
+          await this.searchMetadata();
+        } else {
+          await this.showMainMenu();
+        }
         return;
       }
 
-      const choices = filteredResults.map(item => ({
+      const choices = sortedResults.map(item => ({
         name: `${item.fullName} ${chalk.gray(`(${METADATA_TYPES[item.type].displayName})`)}`,
         value: { name: item.fullName, type: item.type }
       }));
@@ -383,10 +413,11 @@ export class TuiHandler {
         {
           type: 'list',
           name: 'selectedItem',
-          message: 'Select an item to explore:',
+          message: `Select an item to explore (${sortedResults.length} results):`,
           choices: [
             ...choices,
             new inquirer.Separator(),
+            { name: '🔍 Search again', value: 'search' },
             { name: '🔙 Back to main menu', value: 'back' }
           ]
         }
@@ -394,6 +425,9 @@ export class TuiHandler {
 
       if (selectedItem === 'back') {
         await this.showMainMenu();
+        return;
+      } else if (selectedItem === 'search') {
+        await this.searchMetadata();
         return;
       }
 
@@ -404,6 +438,76 @@ export class TuiHandler {
       console.error(chalk.red(error.message));
       await this.showMainMenu();
     }
+  }
+
+  async searchInMetadataType(metadataType, items) {
+    const { searchTerm } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'searchTerm',
+        message: `Search in ${metadataType.displayName}:`,
+        validate: (input) => input.length > 0 ? true : 'Please enter a search term'
+      }
+    ]);
+
+    const filteredItems = items.filter(item => 
+      item.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (filteredItems.length === 0) {
+      console.log(chalk.yellow(`No ${metadataType.displayName.toLowerCase()} found matching "${searchTerm}"`));
+      console.log(chalk.gray('Try:'));
+      console.log(chalk.gray('• Using a different search term'));
+      console.log(chalk.gray('• Checking spelling'));
+      
+      const { action } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'action',
+          message: 'What would you like to do?',
+          choices: [
+            { name: '🔍 Search again', value: 'search' },
+            { name: `🔙 Back to ${metadataType.displayName}`, value: 'back' }
+          ]
+        }
+      ]);
+
+      if (action === 'search') {
+        await this.searchInMetadataType(metadataType, items);
+      } else {
+        await this.exploreMetadataType(metadataType.tuiValue);
+      }
+      return;
+    }
+
+    const choices = filteredItems.map(item => ({
+      name: item.fullName,
+      value: item.fullName
+    }));
+
+    const { selectedItem } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'selectedItem',
+        message: `Select a ${metadataType.displayName.slice(0, -1).toLowerCase()} (${filteredItems.length} results):`,
+        choices: [
+          ...choices,
+          new inquirer.Separator(),
+          { name: '🔍 Search again', value: 'search' },
+          { name: `🔙 Back to ${metadataType.displayName}`, value: 'back' }
+        ]
+      }
+    ]);
+
+    if (selectedItem === 'back') {
+      await this.exploreMetadataType(metadataType.tuiValue);
+      return;
+    } else if (selectedItem === 'search') {
+      await this.searchInMetadataType(metadataType, items);
+      return;
+    }
+
+    await this.showMetadataDetails(metadataType, selectedItem);
   }
 
   async exportComponent() {
