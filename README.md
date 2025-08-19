@@ -39,8 +39,7 @@ npm install
 # Run the script from any SFDX project root
 ~/path/to/org-browser/scripts/org-browser tui
 
-# Fast mode - skip SFDX org check for faster startup
-~/path/to/org-browser/scripts/org-browser tui --fast
+
 ```
 
 ## Configuration
@@ -63,7 +62,6 @@ sf config set target-org your-org-alias
 - Component preview
 - Export to local files
 - Clean, intuitive interface
-- Fast mode option for quicker startup
 
 ### Supported Metadata Types
 - **Objects**: Custom and standard objects
@@ -88,7 +86,6 @@ The tool is built with a clean, maintainable architecture:
 - **Dynamic UI Generation**: Menus and options generated from configuration
 - **SFDX Integration**: Seamless integration with Salesforce CLI
 - **Error Handling**: Robust error handling and user feedback
-- **Fast Mode**: Optional bypass of SFDX org check for faster startup
 
 ## Development
 

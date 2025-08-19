@@ -11,19 +11,15 @@ ORG_BROWSER_DIR="$(dirname "$SCRIPT_DIR")"
 show_usage() {
     echo "Salesforce Org Browser - Terminal UI"
     echo ""
-    echo "Usage: $0 [command] [options]"
+    echo "Usage: $0 [command]"
     echo ""
     echo "Commands:"
     echo "  tui                    Run Terminal UI (default)"
     echo "  help, -h, --help       Show this help"
     echo ""
-    echo "Options:"
-    echo "  --fast                 Skip SFDX org check for faster startup"
-    echo ""
     echo "Examples:"
     echo "  $0                     # Start interactive TUI"
     echo "  $0 tui                 # Start interactive TUI"
-    echo "  $0 tui --fast          # Start TUI with fast mode (skip org check)"
     echo ""
     echo "Note: Run this script from a force-app directory or SFDX project"
     echo "      to use the org configured for that project."
@@ -42,16 +38,11 @@ check_project() {
 # Main logic
 main() {
     local command=${1:-tui}
-    local fast_mode=false
     
     # Parse arguments
     shift  # Remove the command from arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --fast)
-                fast_mode=true
-                shift
-                ;;
             *)
                 echo "❌ Unknown option: $1"
                 show_usage
@@ -75,12 +66,7 @@ main() {
     case $command in
         "tui")
             echo "🚀 Starting Terminal UI..."
-            if [ "$fast_mode" = true ]; then
-                echo "⚡ Fast mode enabled - skipping SFDX org check"
-                cd "$ORIGINAL_DIR" && FAST_MODE=true node "$ORG_BROWSER_DIR/src/tui.js"
-            else
-                cd "$ORIGINAL_DIR" && node "$ORG_BROWSER_DIR/src/tui.js"
-            fi
+            cd "$ORIGINAL_DIR" && node "$ORG_BROWSER_DIR/src/tui.js"
             ;;
         *)
             echo "❌ Unknown command: $command"

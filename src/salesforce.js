@@ -13,13 +13,6 @@ class SalesforceConnector {
     try {
       console.log('\n🔍 Attempting to connect to Salesforce...');
       
-      // Check if fast mode is enabled
-      if (process.env.FAST_MODE === 'true') {
-        console.log('⚡ Fast mode enabled - skipping SFDX org check');
-        console.log('⚠️  Note: You may need to authenticate manually when accessing metadata');
-        return true;
-      }
-      
       console.log('📋 Checking SFDX CLI authentication...');
       if (await this.useSalesforceCLI(workingDir)) {
         return true;
@@ -74,10 +67,6 @@ class SalesforceConnector {
 
   async getMetadataList(metadataType) {
     if (!this.conn) {
-      if (process.env.FAST_MODE === 'true') {
-        console.log('⚠️  Fast mode: No connection available. Please authenticate first.');
-        return [];
-      }
       throw new Error('Not connected to Salesforce');
     }
 
@@ -92,10 +81,6 @@ class SalesforceConnector {
 
   async getMetadata(metadataType, fullNames) {
     if (!this.conn) {
-      if (process.env.FAST_MODE === 'true') {
-        console.log('⚠️  Fast mode: No connection available. Please authenticate first.');
-        return [];
-      }
       throw new Error('Not connected to Salesforce');
     }
 
@@ -284,10 +269,6 @@ class SalesforceConnector {
   async exportMetadata(metadataType, metadataNames, workingDir = process.cwd()) {
     try {
       if (!this.conn) {
-        if (process.env.FAST_MODE === 'true') {
-          console.log('⚠️  Fast mode: No connection available. Please authenticate first.');
-          return false;
-        }
         throw new Error('Not connected to Salesforce');
       }
 
