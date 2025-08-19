@@ -38,8 +38,6 @@ npm install
 ```bash
 # Run the script from any SFDX project root
 ~/path/to/org-browser/scripts/org-browser tui
-
-
 ```
 
 ## Configuration
