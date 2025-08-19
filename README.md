@@ -40,6 +40,15 @@ npm install
 ~/path/to/org-browser/scripts/org-browser tui
 ```
 
+#### MacOS trick
+```bash
+# Add this to your ~/.zshr file to directly use the 'org-browser' command
+alias org-browser="~/Desktop/K2/tools/org-browser/scripts/org-browser"
+
+# Then you will be able to run the org browser in this way
+org-browser tui
+```
+
 ## Configuration
 
 The tool uses Salesforce CLI authentication. Make sure you have a default org set for your project:
