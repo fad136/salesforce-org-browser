@@ -38,9 +38,6 @@ npm start
 
 # Or use the script directly
 ./scripts/org-browser tui
-
-# Fast mode for development
-./scripts/org-browser tui --fast
 ```
 
 ### Code Style
