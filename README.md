@@ -42,8 +42,8 @@ npm install
 
 #### MacOS trick
 ```bash
-# Add this to your ~/.zshr file to directly use the 'org-browser' command
-alias org-browser="~/Desktop/K2/tools/org-browser/scripts/org-browser"
+# Add this to your ~/.zshrc file to directly use the 'org-browser' command
+alias org-browser="~/path/to/org-browser/scripts/org-browser"
 
 # Then you will be able to run the org browser in this way
 org-browser tui
